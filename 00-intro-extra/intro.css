@@ -1,0 +1,32 @@
+/* This is the CSS decorator */
+/* SELECTOR PRIORITY
+   0. !important
+   1. #tag (single element)
+   2. .class (multiple elements of any type)
+   3. elementtype (all elements of one type)
+   4. * (all elements)
+ */
+
+* {
+  animation: flip-anim 0.5s linear 0s 1;
+  animation-play-state: paused;
+  transform: rotate(0deg);
+}
+
+@keyframes flip-anim {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(-360deg);
+  }
+}
+
+body {
+  background-color: beige;
+  outline: 5px hidden darkgrey;
+}
+
+#rand-text {
+  font-weight: bold;
+}

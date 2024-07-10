@@ -9,6 +9,7 @@ const fontSizeField = document.getElementById("font-size-field");
 const clickButton = document.getElementById("click-button");
 const text = document.getElementById("text");
 const checkbox = document.getElementById("checkbox");
+const hiddenText = document.getElementById("hidden-text");
 const body = document.body;
 // let (or var) to declare variables
 
@@ -18,6 +19,8 @@ function buttonPress() {
     body.style.backgroundColor = colorField.value;
     text.style.fontSize = `${fontSizeField.value}px`; // NOTE: the [`] key is above the [Tab] key
     let fail = '${fontSizeField.value}px'; // Apostrophe will not work
+
+    hiddenText.style.visibility = 'visible';
 }
 
 function checkboxChange() {
