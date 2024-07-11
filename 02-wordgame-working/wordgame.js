@@ -37,7 +37,9 @@ function randomBackgroundColor() {
 // For checking word:  json.hasOwnProperty("programming")
 // For array of words: let arr = Object.keys(json)
 // For a random word:  let word = arr[randInt(0, arr.length - 1)];
-
+let randomWord = document.getElementById("random-word");
 function wordsLoaded() {
-    
+    let arr = Object.keys(json);
+    let randomIndex = randInt(0, arr.length-1);
+    randomWord.innerHTML = arr[randomIndex]
 }
