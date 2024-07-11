@@ -15,7 +15,13 @@ var myConfetti = confetti.create(null, {
 });
 
 function loadGame() {
-    secret = 15; // TODO: make the number random
+    numField.min = min;
+    numField.max = max;
+    numField.value = max;
+    secret = Math.random();
+    secret = secret * (max-min+1);
+    secret = secret + min;
+    secret = Math.floor(secret);
 }
 
 function makeGuess() {
