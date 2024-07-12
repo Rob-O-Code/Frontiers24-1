@@ -1,4 +1,14 @@
-.correct {
-    color: green;
-    font-size: 20px;
+.letter {
+    width: 10vmin;
+    height: 10vmin;
+    display: table-cell;
+    vertical-align: middle;
+    text-align: center;
+    border: 2px solid black;
+    margin: 10px;
+    font-size: 8vmin;
+}
+
+.letter.correct {
+    background-color: rgb(68, 154, 68);
 }
