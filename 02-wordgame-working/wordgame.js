@@ -73,8 +73,17 @@ function changeGuess() {
 
     // SKIP and empty input if guess is NOT a word
     if (!json.hasOwnProperty(guess)) {
-        feedbackText.innerHTML = `"${guess}" is not a word. Try again.`;
+        feedbackText.innerHTML += `"${guess}" is not a word. Try again.<br>`;
         guessField.value = "";
         return;
     }
+
+    let correctPlacement = 0;
+    for (let i = 0; i < 5; i++) {
+        if (guess[i] == secret[i]) {
+            correctPlacement++;
+        }
+    }
+    feedbackText.innerHTML += `"${guess}" has ${correctPlacement} letter(s) in the correct place.<br>`;
+    guessField.value = "";
 }
