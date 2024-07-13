@@ -1,4 +1,4 @@
-let json;
+let allWords = [];
 const body = document.body;
 
 // Returns a random integer between min and max
@@ -12,11 +12,10 @@ function randInt(min, max) {
 }
 
 function loadGame() {
-    fetch('./words_dictionary.json')
+    fetch('./enable1.txt')
         .then(response => response.text())
         .then(text => {
-            // Split the text by lines to get individual words
-            json = JSON.parse(text);
+            allWords = text.split('\n');
             console.log('Words loaded!');
             wordsLoaded();
         })
@@ -40,11 +39,10 @@ function randomBackgroundColor() {
 const randomWord = document.getElementById("random-word");
 const guessField = document.getElementById("guess-field");
 const feedbackText = document.getElementById("feedback-text");
-let allWords = [];
+let wordLength = 5;
 let fiveLetterWords = [];
 let secret = '';
 function wordsLoaded() {
-    allWords = Object.keys(json);
     let randomIndex = randInt(0, allWords.length-1);
     randomWord.innerHTML = allWords[randomIndex];
 
@@ -72,22 +70,39 @@ function changeGuess() {
     console.log(`Guess: "${guess}" and Secret: "${secret}"`);
 
     // SKIP and empty input if guess is NOT a word
-    if (!json.hasOwnProperty(guess)) {
+    if (allWords.indexOf(guess) < 0) {
         feedbackText.innerHTML = `"${guess}" is not a word. Try again.<br>`+ feedbackText.innerHTML;
         guessField.value = "";
         return;
     }
 
-    let correctPlacement = 0;
+    makeGuess(guess);
+}
+
+function makeGuess(guess) {
+    // Create list of missed letters
+    let missedLetters = ""
+    for (let i = 0; i < wordLength; i++) {
+        if (guess[i] != secret[i]) {
+            missedLetters += secret[i];
+        }
+    }
+
+    // Add letter tiles to word
     let decoratedGuess = "";
-    for (let i = 0; i < 5; i++) {
+    for (let i = 0; i < wordLength; i++) {
         if (guess[i] == secret[i]) {
-            correctPlacement++;
             decoratedGuess += `<span class="letter correct">${guess[i]}</span>`;
+        } else if (missedLetters.indexOf(guess[i]) >= 0) {
+            decoratedGuess += `<span class="letter partial">${guess[i]}</span>`;
+            missedLetters = missedLetters.replace(guess[i], "");
         } else {
             decoratedGuess += `<span class="letter">${guess[i]}</span>`;
         }
     }
-    feedbackText.innerHTML = `<span>${decoratedGuess}</span> has ${correctPlacement} letter(s) in the correct place.<br>` + feedbackText.innerHTML;
+
+    feedbackText.innerHTML = `<span>${decoratedGuess}</span><br>` + feedbackText.innerHTML;
     guessField.value = "";
+
+
 }

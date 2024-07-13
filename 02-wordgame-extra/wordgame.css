@@ -1,3 +1,7 @@
+* {
+    font-family: Verdana, Geneva, Tahoma, sans-serif;
+}
+
 .letter {
     width: 10vmin;
     height: 10vmin;
@@ -7,8 +11,14 @@
     border: 2px solid black;
     margin: 10px;
     font-size: 8vmin;
+
+    background-color: grey;
 }
 
 .letter.correct {
-    background-color: rgb(68, 154, 68);
+    background-color: lightgreen;
+}
+
+.letter.partial {
+    background-color: lightyellow;
 }
