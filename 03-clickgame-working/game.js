@@ -18,7 +18,7 @@ function buy(store) {
         harvest(widget);
     }
     widgetContainer.appendChild(widget);
-
+    if (widget.getAttribute("auto") == 'true') harvest(widget);
 }
 
 function harvest(widget) {
@@ -38,7 +38,10 @@ function harvest(widget) {
         widget.removeAttribute("harvesting");
         // If automatic, collect points
         if (widget.getAttribute("auto") == 'true') {
-
+            changeScore(widget.getAttribute("reap"));
+            showPoint(widget);
+            harvest(widget);
+            // Play sound?
         }
     }, parseFloat(widget.getAttribute("cooldown")) * 1000);
 }
@@ -47,6 +50,16 @@ function changeScore(amount) {
     score.innerHTML = parseInt(score.innerHTML) + parseInt(amount);
 
     // Update the stores to block buying expensive boxes
+    for (let store of stores) {
+        let bank = parseInt(score.innerHTML);
+        let cost = parseInt(store.getAttribute("cost"));
+
+        if (bank < cost) {
+            store.setAttribute("broke", "");
+        } else {
+            store.removeAttribute("broke");
+        }
+    }
 }
 
 function showPoint(widget) {
