@@ -11,7 +11,16 @@ function buy(store) {
 
     changeScore(-1 * cost);
 
+    // If Super-Gompei already exists
+    var superGompei = document.getElementById("super-gompei");
+    if (superGompei !== null) {
+        superGompei.setAttribute("reap", (parseInt(superGompei.getAttribute("reap")) + 100));
+        return;
+    }
+
     var widget = document.createElement("div");
+    if (store.getAttribute("name") == "Super-Gompei")
+        widget.id = "super-gompei";
     widget.classList.add("widget");
     fillWidget(store, widget);
     widget.onclick = () => {
