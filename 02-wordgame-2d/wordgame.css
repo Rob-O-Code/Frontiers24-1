@@ -30,6 +30,10 @@ h1, h3 {
     /* container-type: inline-size; */
 }
 
+#guess-board, #guess-history > div {
+    container-type: size;
+}
+
 #guess-board {
     outline: 2px solid black;
     height: calc(min(95vw, 95%));
@@ -58,11 +62,14 @@ h1, h3 {
     -webkit-user-select: none; /* Safari */
     -ms-user-select: none; /* IE 10 and IE 11 */
     user-select: none; /* Standard syntax */
+
+    
+    font-size: 12cqh; /* 12% of gameboard TODO: fix */
 }
 
 .letter {
     border: 2px solid black;
-    font-size: 12cqi;
+    /* font-size: 12cqi; */
 }
 
 .history-letter {
