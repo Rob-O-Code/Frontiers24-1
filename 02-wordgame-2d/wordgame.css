@@ -30,8 +30,8 @@ h1, h3 {
     /* container-type: inline-size; */
 }
 
-#guess-board, #guess-history > div {
-    container-type: size;
+#guess-board, .history-board {
+    /* container-type: size; */
 }
 
 #guess-board {
@@ -40,6 +40,7 @@ h1, h3 {
     aspect-ratio: 1 / 1; /* TODO: Make relative to board size */
     /* margin: auto; */
     /* margin-top: 2.5vh; */
+    container-type: size;
 }
 
 #guess-board > div, #guess-history > div > div {
@@ -63,7 +64,6 @@ h1, h3 {
     -ms-user-select: none; /* IE 10 and IE 11 */
     user-select: none; /* Standard syntax */
 
-    
     font-size: 12cqh; /* 12% of gameboard TODO: fix */
 }
 
@@ -133,7 +133,7 @@ h1, h3 {
 }
 
 .letter.selected {
-    outline: 4px solid white;
+    outline: 4px solid aqua;
     outline-offset: -6px;
     animation-name: selected-pulse;
     animation-timing-function: linear;
@@ -150,19 +150,33 @@ h1, h3 {
     }
 }
 
+.letter.misspell {
+    animation-name: misspell-pulse;
+}
+.letter.missing {
+    animation-name: missing-pulse;
+}
 .letter.misspell, .letter.missing {
-    animation-name: invalid-pulse;
     animation-timing-function: linear;
     animation-duration: 1s;
     animation-iteration-count: infinite;
 }
 
-@keyframes invalid-pulse {
+@keyframes missing-pulse {
     0%, 100% {
         background-color: red;
     }
     50% {
         background-color: lightpink;
+    }
+}
+
+@keyframes misspell-pulse {
+    0%, 100% {
+        color: red;
+    }
+    50% {
+        color: rgb(141, 0, 0);
     }
 }
 
@@ -247,6 +261,8 @@ h1, h3 {
 
     display: flex;
     align-items: center;
+
+    container-type: size;
 }
 
 .history-board {

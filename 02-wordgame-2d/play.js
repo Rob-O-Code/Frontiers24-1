@@ -69,10 +69,6 @@ function makeGuess() {
     for (let r = 0; r < RMAX; r++) {
         guess[r] = [];
         for (let c = 0; c < CMAX; c++) {
-            letters[r][c].classList.remove("correct");
-            letters[r][c].classList.remove("inword-h");
-            letters[r][c].classList.remove("inword-v");
-            letters[r][c].classList.remove("inboard");
             letters[r][c].classList.remove("missing");
             letters[r][c].classList.remove("misspell");
             guess[r][c] = letters[r][c].innerHTML.toLowerCase();
@@ -86,21 +82,34 @@ function makeGuess() {
         }
     }
     if (!valid) return;
-    for (let row of letters)
-        for (let box of row)
-            if (!box.classList.contains("blank"))
-                box.classList.add("misspell");
     
     let guessInfo = validateBoard(guess, 3);
     for (let wordInfo of guessInfo.wordList) {
-        if (wordInfo.valid) {
+        if (!wordInfo.valid) {
             for (let i = 0; i < wordInfo.word.length; i++) {
                 let letterPos = getLetterPos(wordInfo, i);
-                letters[letterPos.row][letterPos.col].classList.remove("misspell");
+                letters[letterPos.row][letterPos.col].classList.add("misspell");
             }
         }
     }
     if (!guessInfo.valid) return;
+    for (let r = 0; r < RMAX; r++) {
+        guess[r] = [];
+        for (let c = 0; c < CMAX; c++) {
+            letters[r][c].classList.remove("correct");
+            letters[r][c].classList.remove("inword-h");
+            letters[r][c].classList.remove("inword-v");
+            letters[r][c].classList.remove("inboard");
+            guess[r][c] = letters[r][c].innerHTML.toLowerCase();
+            letters[r][c].style.animation = 'none';
+            letters[r][c].offsetHeight;
+            letters[r][c].style.animation = null;
+            if (secretBoard[r][c] != "" && guess[r][c] == "") {
+                letters[r][c].classList.add("missing");
+                valid = false;
+            }
+        }
+    }
     let secretInfo = validateBoard(secretBoard, 3);
     // ASSUME: secretInfo and guessInfo have aligned wordInfo
     for (let w = 0; w < secretInfo.wordList.length; w++) {
