@@ -29,7 +29,7 @@ const randomWord = document.getElementById("random-word");
 const guessField = document.getElementById("guess-field");
 const feedbackText = document.getElementById("feedback-text");
 
-let RMAX = 6;
+let RMAX = 5;
 let CMAX = 5;
 let WMAX = Math.max(RMAX, CMAX);
 let secretBoard = [[]];
@@ -53,7 +53,7 @@ function generateBoard(words) {
         }
         if (newBoard == null) continue;
         board = newBoard;
-        // Place 3 more words
+        // Place 2 more words
         for (let n = 4; n >= 3; n--) {
             let boardBackup = JSON.stringify(board);
             for (let a2 = 0; a2 < 1000; a2++) {

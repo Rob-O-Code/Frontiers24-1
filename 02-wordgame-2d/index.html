@@ -3,17 +3,24 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>GIVE ME A TITLE!</title>
+    <title>2D Wordle</title>
     <link rel="stylesheet" href="./wordgame.css">
 </head>
 <body onload="loadGame()">
-    <h1>2D Wordle</h1>
-    <h3>It's like a crossword puzzle, I guess?</h3>
+    <!-- <h1>2D Wordle</h1> -->
+    <!-- <h3>It's like a crossword puzzle, I guess?</h3> -->
 
-    <div id="guess-board"></div>
+    <div id="guess-board-container">
+        <div id="guess-board"></div>
+    </div>
 
-    <br>
-    <p id="feedback-text"></p>
+    <div id="guess-history"></div>
+
+    <div id="keyboard">
+        <div id="keyboard-row1"></div>
+        <div id="keyboard-row2"></div>
+        <div id="keyboard-row3"></div>
+    </div>
 
     <script src="./wordgame.js"></script>
     <script src="./play.js"></script>

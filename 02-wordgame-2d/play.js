@@ -5,8 +5,10 @@ let cSelected = 0;
 const MOVE = {CLICK: 0, UP: 1, DOWN: 2, LEFT: 3, RIGHT: 4};
 let lastMove = MOVE.CLICK;
 
+let popularWords = [];
+
 function loadGame() {
-    fetch('./enable1.txt')
+    Promise.all([fetch('./enable1.txt')
         .then(response => response.text())
         .then(text => {
             allWords = text.split('\n');
@@ -14,13 +16,54 @@ function loadGame() {
         })
         .catch(error => {
             console.error('Error fetching words: ', error);
-        })
+        }),
+        fetch('./popular.txt')
+            .then(response => response.text())
+            .then(text => {
+                popularWords = text.split('\n');
+                console.log('Words loaded!');
+            })
+            .catch(error => {
+                console.error('Error fetching popular: ', error);
+            })])
+        .then(initBoard)
         .then(wordsLoaded)
         .catch(error => {
             console.error('Error loading game: ', error);
         });
     randomBackgroundColor();
-    initBoard();
+    initKeyboard();
+}
+
+const keyboardRow1 = document.getElementById("keyboard-row1");
+const keyboardRow2 = document.getElementById("keyboard-row2");
+const keyboardRow3 = document.getElementById("keyboard-row3");
+function initKeyboard() {
+    const ROW1 = "qwertyuiop";
+    const ROW2 = "asdfghjkl";
+    const ROW3 = "zxcvbnm";
+    var backspaceDiv = document.createElement("div");
+    backspaceDiv.classList.add("keyboard-backspace");
+    backspaceDiv.innerHTML = "←";
+    backspaceDiv.onclick = () => {deleteLetter(true);}
+    keyboardRow3.appendChild(backspaceDiv);
+
+    for (const [kR, ROW] of [[keyboardRow1, ROW1], [keyboardRow2, ROW2], [keyboardRow3, ROW3]]) {
+        for (const c of ROW) {
+            var keyDiv = document.createElement("div");
+            keyDiv.id = `keyboard-${c}`;
+            keyDiv.classList.add("keyboard-key");
+            keyDiv.innerHTML = c.toUpperCase();
+            keyDiv.onclick = () => {keyPress(c);}
+            kR.appendChild(keyDiv);
+        }
+    }
+
+    var enterDiv = document.createElement("div");
+    enterDiv.classList.add("keyboard-enter");
+    enterDiv.innerHTML = "enter";
+    enterDiv.onclick = () => {makeGuess();}
+    keyboardRow3.appendChild(enterDiv);
 }
 
 function wordsLoaded() {
@@ -28,7 +71,7 @@ function wordsLoaded() {
     for (let i = 2; i <= WMAX; i++) {
         placeableWords[i] = [];
     }
-    for (const w of allWords) {
+    for (const w of popularWords) {
         if (w.length > 1 && w.length <= WMAX)
             placeableWords[w.length].push(w);
     }
@@ -94,35 +137,10 @@ document.addEventListener("keydown", (event) => {
             else lastMove = MOVE.DOWN;
             break;
         case "Backspace":
-            letters[rSelected][cSelected].innerHTML = "";
-            letters[rSelected][cSelected].classList.remove("correct");
-            letters[rSelected][cSelected].classList.remove("inword");
-            letters[rSelected][cSelected].classList.remove("inboard");
-            letters[rSelected][cSelected].classList.remove("misspell");
-            for (let i = rSelected+1; i < RMAX && secretBoard[i][cSelected] != ""; i++)
-                letters[i][cSelected].classList.remove("misspell");
-            for (let i = cSelected+1; i < CMAX && secretBoard[rSelected][i] != ""; i++)
-                letters[rSelected][i].classList.remove("misspell");
-            for (let i = rSelected-1; i >= 0 && secretBoard[i][cSelected] != ""; i--)
-                letters[i][cSelected].classList.remove("misspell");
-            for (let i = cSelected-1; i >= 0 && secretBoard[rSelected][i] != ""; i--)
-                letters[rSelected][i].classList.remove("misspell");
-            // oh lord
+            deleteLetter(true);
             break;
         case "Delete":
-            letters[rSelected][cSelected].innerHTML = "";
-            letters[rSelected][cSelected].classList.remove("correct");
-            letters[rSelected][cSelected].classList.remove("inword");
-            letters[rSelected][cSelected].classList.remove("inboard");
-            letters[rSelected][cSelected].classList.remove("misspell");
-            for (let i = rSelected+1; i < RMAX && secretBoard[i][cSelected] != ""; i++)
-                letters[i][cSelected].classList.remove("misspell");
-            for (let i = cSelected+1; i < CMAX && secretBoard[rSelected][i] != ""; i++)
-                letters[rSelected][i].classList.remove("misspell");
-            for (let i = rSelected-1; i >= 0 && secretBoard[i][cSelected] != ""; i--)
-                letters[i][cSelected].classList.remove("misspell");
-            for (let i = cSelected-1; i >= 0 && secretBoard[rSelected][i] != ""; i--)
-                letters[rSelected][i].classList.remove("misspell");
+            deleteLetter(false);
             break;
         case "Enter":
             makeGuess();
@@ -133,13 +151,33 @@ document.addEventListener("keydown", (event) => {
     setSelectedLetter();
 })
 
-document.addEventListener("keypress", (event) => {
+function deleteLetter(isBackspace) {
+    letters[rSelected][cSelected].innerHTML = "";
+    letters[rSelected][cSelected].classList.remove("correct");
+    letters[rSelected][cSelected].classList.remove("inword-h");
+    letters[rSelected][cSelected].classList.remove("inword-v");
+    letters[rSelected][cSelected].classList.remove("inboard");
+    letters[rSelected][cSelected].classList.remove("misspell");
+    for (let i = rSelected+1; i < RMAX && secretBoard[i][cSelected] != ""; i++)
+        letters[i][cSelected].classList.remove("misspell");
+    for (let i = cSelected+1; i < CMAX && secretBoard[rSelected][i] != ""; i++)
+        letters[rSelected][i].classList.remove("misspell");
+    for (let i = rSelected-1; i >= 0 && secretBoard[i][cSelected] != ""; i--)
+        letters[i][cSelected].classList.remove("misspell");
+    for (let i = cSelected-1; i >= 0 && secretBoard[rSelected][i] != ""; i--)
+        letters[rSelected][i].classList.remove("misspell");
+}
+
+document.addEventListener("keypress", (event) => keyPress(event.key));
+    
+function keyPress(key) {
     if (secretBoard[rSelected][cSelected] == "") return;
-    if (isLetter(event.key)) {
-        if (letters[rSelected][cSelected].innerHTML != event.key.toUpperCase()) {
-            letters[rSelected][cSelected].innerHTML = event.key.toUpperCase();
+    if (isLetter(key)) {
+        if (letters[rSelected][cSelected].innerHTML != key.toUpperCase()) {
+            letters[rSelected][cSelected].innerHTML = key.toUpperCase();
             letters[rSelected][cSelected].classList.remove("correct");
-            letters[rSelected][cSelected].classList.remove("inword");
+            letters[rSelected][cSelected].classList.remove("inword-h");
+            letters[rSelected][cSelected].classList.remove("inword-v");
             letters[rSelected][cSelected].classList.remove("inboard");
             letters[rSelected][cSelected].classList.remove("missing");
             letters[rSelected][cSelected].classList.remove("misspell");
@@ -182,10 +220,10 @@ document.addEventListener("keypress", (event) => {
         else if (move == MOVE.DOWN) rSelected++;
         lastMove = move;
         setSelectedLetter();
-    } else if (event.key === " ") {
+    } else if (key === " ") {
         // Flip to other word
     }
-});
+}
 
 function checkSurroundings() {
     var s = {};
@@ -219,7 +257,8 @@ function makeGuess() {
         guess[r] = [];
         for (let c = 0; c < CMAX; c++) {
             letters[r][c].classList.remove("correct");
-            letters[r][c].classList.remove("inword");
+            letters[r][c].classList.remove("inword-h");
+            letters[r][c].classList.remove("inword-v");
             letters[r][c].classList.remove("inboard");
             letters[r][c].classList.remove("missing");
             letters[r][c].classList.remove("misspell");
@@ -233,14 +272,13 @@ function makeGuess() {
             }
         }
     }
-    if (!valid) {console.log("BLANKS"); return;}
+    if (!valid) return;
     for (let row of letters)
         for (let box of row)
             if (!box.classList.contains("blank"))
                 box.classList.add("misspell");
     
     let guessInfo = validateBoard(guess, 3);
-    console.log(guessInfo);
     for (let wordInfo of guessInfo.wordList) {
         if (wordInfo.valid) {
             for (let i = 0; i < wordInfo.word.length; i++) {
@@ -249,7 +287,7 @@ function makeGuess() {
             }
         }
     }
-    if (!guessInfo.valid) {console.log("MISSPELLS"); return;}
+    if (!guessInfo.valid) return;
     let secretInfo = validateBoard(secretBoard, 3);
     // ASSUME: secretInfo and guessInfo have aligned wordInfo
     for (let w = 0; w < secretInfo.wordList.length; w++) {
@@ -266,14 +304,20 @@ function makeGuess() {
             if (guessWord[i] == secretWord[i]) continue;
             if (secretInfo.wordList[w].unguessed.indexOf(guessWord[i]) >= 0) {
                 let letterPos = getLetterPos(secretInfo.wordList[w], i);
-                letters[letterPos.row][letterPos.col].classList.add("inword");
-                secretInfo.wordList[w].unguessed.replace(guessWord[i], "");
+                if (secretInfo.wordList[w].dir == DIR.HORIZONTAL)
+                    letters[letterPos.row][letterPos.col].classList.add("inword-h");
+                else if (secretInfo.wordList[w].dir == DIR.VERTICAL)
+                    letters[letterPos.row][letterPos.col].classList.add("inword-v");
+                
+                secretInfo.wordList[w].unguessed = secretInfo.wordList[w].unguessed.replace(guessWord[i], "");
             }
         }
     }
     let unguessed = "";
+    let allLetters = "";
     for (let wInfo of secretInfo.wordList) {
         unguessed += wInfo.unguessed;
+        allLetters += wInfo.word;
     }
     for (let w = 0; w < secretInfo.wordList.length; w++) {
         let guessWord = guessInfo.wordList[w].word;
@@ -281,13 +325,19 @@ function makeGuess() {
         for (let i = 0; i < secretWord.length; i++) { // RIGHT LETTER, WRONG PLACE
             if (guessWord[i] == secretWord[i]) continue;
             let letterPos = getLetterPos(secretInfo.wordList[w], i);
-            if (letters[letterPos.row][letterPos.col].classList.contains("inword")) continue;
+            if (letters[letterPos.row][letterPos.col].classList.contains("inword-h")) continue;
+            if (letters[letterPos.row][letterPos.col].classList.contains("inword-v")) continue;
             if (unguessed.indexOf(guessWord[i]) >= 0) {
                 letters[letterPos.row][letterPos.col].classList.add("inboard");
-                unguessed.replace(guessWord[i], "");
+                unguessed = unguessed.replace(guessWord[i], "");
+            } else if (allLetters.indexOf(guessWord[i]) < 0) {
+                const k = document.getElementById(`keyboard-${guessWord[i]}`);
+                k.classList.add("notinboard");
             }
         }
-    }
+    } // TODO: letter in two words counted twice in unguessed
+
+    saveHistory();
 }
 
 function getLetterPos(wordInfo, letter) {
@@ -295,4 +345,26 @@ function getLetterPos(wordInfo, letter) {
         return {row: wordInfo.row, col: wordInfo.col+letter};
     if (wordInfo.dir == DIR.VERTICAL)
         return {row: wordInfo.row+letter, col: wordInfo.col};
+}
+
+const guessHistory = document.getElementById("guess-history");
+
+function saveHistory() {
+    var hBoard = document.createElement("div");
+    hBoard.classList.add("history-board");
+
+    for (var boardRow of guessBoard.children) {
+        var hRow = document.createElement("div");
+        for (var boardLetter of boardRow.children) {
+            var hLetter = document.createElement("div");
+            hLetter.innerHTML = boardLetter.innerHTML;
+            hLetter.classList = boardLetter.classList;
+            hLetter.classList.remove("letter");
+            hLetter.classList.add("history-letter");
+            hRow.appendChild(hLetter);
+        }
+        hBoard.appendChild(hRow);
+    }
+
+    guessHistory.prepend(hBoard);
 }
