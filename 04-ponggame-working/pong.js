@@ -11,6 +11,7 @@ let paddleWidth = 25;
 let paddleLength = 100;
 let ballRadius = 12.5;
 let paddleVelocity = 5;
+let paddleForce = 1.1; // 110% of speed before
 
 let ball;
 let paddleL;
@@ -55,6 +56,7 @@ function nextTick() {
 function play() {
     paddleL.move(false, ball);
     paddleR.move(false, ball);
+    ball.bounce([paddleL, paddleR]);
     ball.move();
     // Add serving the ball?
     // If a player wins, stop the game...

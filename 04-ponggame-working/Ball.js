@@ -24,4 +24,55 @@ class Ball {
         this.x += this.vx;
         this.y += this.vy;
     }
+
+    bounce(things) {
+        this.bounceWalls();
+        for (let thing of things) {
+            if (thing instanceof Paddle) {
+                if (thing.side == SIDE.LEFT) {
+                    let side = this.bounceLeftPaddle(thing);
+                    if (side != SIDE.NONE) return side;
+                }
+                if (thing.side == SIDE.RIGHT) {
+                    let side = this.bounceRightPaddle(thing);
+                    if (side != SIDE.NONE) return side;
+                }
+            }
+            // if (thing instanceof Obstacle) ...
+        }
+    }
+
+    bounceWalls() {
+        if (this.y - this.r < 0) {
+            this.vy = Math.abs(this.vy);
+        }
+        if (this.y + this.r > boardHeight) {
+            this.vy = -Math.abs(this.vy);
+        }
+    }
+
+    bounceLeftPaddle(paddle) {
+        if (this.x - this.r > paddle.w) return SIDE.NONE;
+        if (this.x - this.r < 0) return SIDE.RIGHT; // Someone got a point...
+        if (this.y < paddle.y) return SIDE.NONE;
+        if (this.y > paddle.y + paddle.l) return SIDE.NONE;
+        if (this.vx < 0) {
+            this.vx = paddleForce * Math.abs(this.vx);
+            // add other spin, etc.
+        }
+        return SIDE.NONE;
+    }
+
+    bounceRightPaddle(paddle) {
+        if (this.x + this.r < paddle.x) return SIDE.NONE;
+        if (this.x + this.r > paddle.x + paddle.w) return SIDE.LEFT; // Someone got a point...
+        if (this.y < paddle.y) return SIDE.NONE;
+        if (this.y > paddle.y + paddle.l) return SIDE.NONE;
+        if (this.vx > 0) {
+            this.vx = -paddleForce * Math.abs(this.vx);
+            // add other spin, etc.
+            // add sound?
+        }
+        return SIDE.NONE;
+    }
 }

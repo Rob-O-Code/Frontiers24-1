@@ -1,4 +1,4 @@
-const SIDE = {LEFT: 0, RIGHT: 1};
+const SIDE = {NONE: 0, LEFT: 1, RIGHT: 2};
 
 class Paddle {
     constructor(x, y, l, w, side, c) {
