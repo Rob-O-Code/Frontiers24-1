@@ -53,6 +53,8 @@ function nextTick() {
 }
 
 function play() {
+    paddleL.move(false, ball);
+    paddleR.move(false, ball);
     ball.move();
     // Add serving the ball?
     // If a player wins, stop the game...
