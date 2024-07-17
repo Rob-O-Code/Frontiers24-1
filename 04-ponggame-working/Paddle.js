@@ -28,6 +28,7 @@ class Paddle {
 
             // control this.vy using ball
             // don't set this.y! (cheating)
+            this.vy = paddleVelocity;
         }
         this.y += this.vy;
         if (this.y < 0) this.y = 0;

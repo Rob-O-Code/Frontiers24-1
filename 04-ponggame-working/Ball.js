@@ -40,6 +40,7 @@ class Ball {
             }
             // if (thing instanceof Obstacle) ...
         }
+        return SIDE.NONE;
     }
 
     bounceWalls() {

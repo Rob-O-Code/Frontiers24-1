@@ -1,7 +1,7 @@
 const gameboard = document.getElementById("gameboard");
 const cpucheck = document.getElementById("cpucheck");
 const ctx = gameboard.getContext("2d");
-const STATE = {STARTUP: 0, PLAYING: 1};
+const STATE = {STARTUP: 0, PLAYING: 1, GAMEOVER: 2};
 
 let state = STATE.STARTUP;
 
@@ -32,11 +32,16 @@ function draw() {
 }
 
 function resetGame() {
+    state = STATE.STARTUP;
     clearInterval(intervalID);
-    ball = new Ball(boardWidth/2, boardHeight/2, 1, -1, ballRadius, "hotpink");
+    resetBall();
     paddleL = new Paddle(0, 0, paddleLength, paddleWidth, SIDE.LEFT, "red");
     paddleR = new Paddle(boardWidth-paddleWidth, 0, paddleLength, paddleWidth, SIDE.RIGHT, "green");
     nextTick();
+}
+
+function resetBall() {
+    ball = new Ball(boardWidth/2, boardHeight/2, 1, -1, ballRadius, "hotpink");
 }
 
 let intervalID;
@@ -48,6 +53,12 @@ function nextTick() {
         case STATE.PLAYING:
             state = play();
             break;
+        case STATE.GAMEOVER:
+            state = STATE.GAMEOVER;
+            break;
+        default:
+            state = STATE.STARTUP;
+            break;
     }
     draw();
     intervalID = setTimeout(nextTick, 10);
@@ -55,10 +66,22 @@ function nextTick() {
 
 function play() {
     paddleL.move(false, ball);
-    paddleR.move(false, ball);
-    ball.bounce([paddleL, paddleR]);
+    paddleR.move(cpucheck.checked, ball);
+    let scoreSide = ball.bounce([paddleL, paddleR]);
+    if (scoreSide != SIDE.NONE) {
+        if (scoreSide == SIDE.LEFT) scoreL++;
+        if (scoreSide == SIDE.RIGHT) scoreR++;
+        updateScore();
+        resetBall();
+        if (scoreL > 10 || scoreR > 10) return STATE.GAMEOVER;
+    }
     ball.move();
     // Add serving the ball?
     // If a player wins, stop the game...
     return STATE.PLAYING;
+}
+
+function updateScore() {
+    const scoreboard = document.getElementById("scoreboard");
+    scoreboard.innerHTML = `${scoreL} : ${scoreR}`; // 7 : 3
 }
