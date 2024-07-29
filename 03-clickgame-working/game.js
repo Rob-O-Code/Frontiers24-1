@@ -13,7 +13,7 @@ function buy(store) {
 
     // If Super-Gompei already exists
     var superGompei = document.getElementById("super-gompei");
-    if (superGompei !== null) {
+    if (store.getAttribute("name") === "Super-Gompei" && superGompei !== null) {
         superGompei.setAttribute("reap", (parseInt(superGompei.getAttribute("reap")) + 100));
         return;
     }
